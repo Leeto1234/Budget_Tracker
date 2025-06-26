@@ -33,7 +33,7 @@
         android:layout_margin="16dp"
         android:contentDescription="Add Category"
         android:src="@drawable/ic_add"
-        app:backgroundTint="#B22222"
+        app:backgroundTint="#12033A"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:tint="@android:color/white" />

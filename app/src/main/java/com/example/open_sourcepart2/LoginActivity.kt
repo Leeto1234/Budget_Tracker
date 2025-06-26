@@ -1,12 +1,9 @@
 package com.example.open_sourcepart2
 
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-
-// LoginActivity.kt
-
 import android.content.Intent
+import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.example.open_sourcepart2.databinding.ActivityLoginBinding
 
 class LoginActivity : AppCompatActivity() {
@@ -22,7 +19,7 @@ class LoginActivity : AppCompatActivity() {
         databaseHelper = DatabaseHelper(this)
         sessionManager = SessionManager(this)
 
-        // Check if user is already logged in
+        // If user is already logged in, go to MainActivity
         if (sessionManager.isLoggedIn()) {
             startActivity(Intent(this, MainActivity::class.java))
             finish()
@@ -40,7 +37,15 @@ class LoginActivity : AppCompatActivity() {
                 val user = databaseHelper.getUser(email, password)
                 if (user != null) {
                     sessionManager.createLoginSession(user)
+
+                    // Launch MainActivity
                     startActivity(Intent(this, MainActivity::class.java))
+
+                    // Also with userId
+                    val pieIntent = Intent(this, Piechart::class.java)
+                    pieIntent.putExtra("userId", user.id)
+                    startActivity(pieIntent)
+
                     finish()
                 } else {
                     Toast.makeText(this, "Invalid email or password", Toast.LENGTH_SHORT).show()
@@ -52,19 +57,16 @@ class LoginActivity : AppCompatActivity() {
             startActivity(Intent(this, RegistrationActivity::class.java))
         }
 
-        // Social login buttons (for demonstration purposes)
+        // Social login (optional placeholders)
         binding.ivGoogle.setOnClickListener {
             Toast.makeText(this, "Google login not implemented", Toast.LENGTH_SHORT).show()
         }
-
         binding.ivGithub.setOnClickListener {
             Toast.makeText(this, "GitHub login not implemented", Toast.LENGTH_SHORT).show()
         }
-
         binding.ivFacebook.setOnClickListener {
             Toast.makeText(this, "Facebook login not implemented", Toast.LENGTH_SHORT).show()
         }
-
         binding.ivInstagram.setOnClickListener {
             Toast.makeText(this, "Instagram login not implemented", Toast.LENGTH_SHORT).show()
         }

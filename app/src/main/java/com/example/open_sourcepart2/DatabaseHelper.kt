@@ -599,6 +599,29 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         cursor.close()
         return totalIncome
     }
+    fun getAllExpenses(): List<Expense> {
+        val expenses = mutableListOf<Expense>()
+        val db = readableDatabase
+        val cursor = db.rawQuery("SELECT * FROM Expense", null)
+
+        if (cursor.moveToFirst()) {
+            do {
+                val expense = Expense(
+                    id = cursor.getLong(cursor.getColumnIndexOrThrow("id")),
+                    amount = cursor.getDouble(cursor.getColumnIndexOrThrow("amount")),
+                    description = cursor.getString(cursor.getColumnIndexOrThrow("description")),
+                    date = cursor.getString(cursor.getColumnIndexOrThrow("date")),
+                    categoryId = cursor.getLong(cursor.getColumnIndexOrThrow("categoryId")),
+                    userId = cursor.getLong(cursor.getColumnIndexOrThrow("userId"))
+                )
+                expenses.add(expense)
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        db.close()
+        return expenses
+    }
 
     fun getTotalExpensesByUser(userId: Long): Double {
         val db = readableDatabase

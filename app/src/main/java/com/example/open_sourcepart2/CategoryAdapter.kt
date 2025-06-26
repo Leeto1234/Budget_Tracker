@@ -53,7 +53,7 @@ class CategoryAdapter(
             try {
                 binding.tvCategoryInitial.setBackgroundColor(Color.parseColor(category.color))
             } catch (e: Exception) {
-                binding.tvCategoryInitial.setBackgroundColor(Color.parseColor("#B22222"))
+                binding.tvCategoryInitial.setBackgroundColor(Color.parseColor("#12033A"))
             }
 
             binding.btnEditCategory.setOnClickListener {

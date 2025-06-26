@@ -17,7 +17,7 @@
             android:id="@+id/view_category_color"
             android:layout_width="4dp"
             android:layout_height="match_parent"
-            android:background="#B22222" />
+            android:background="#12033A" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -69,7 +69,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="R0.00"
-            android:textColor="#B22222"
+            android:textColor="#12033A"
             android:textSize="16sp"
             android:textStyle="bold" />
     </LinearLayout>

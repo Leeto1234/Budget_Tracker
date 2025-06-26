@@ -9,9 +9,11 @@ import android.view.ViewGroup
 
 // ui/budget/BudgetFragment.kt
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.open_sourcepart2.databinding.ActivityPiechartBinding
 import com.example.open_sourcepart2.databinding.FragmentBudgetBinding
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -32,6 +34,7 @@ class BudgetFragment : Fragment() {
         currency = Currency.getInstance("ZAR")
     }
 
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -43,6 +46,8 @@ class BudgetFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+
 
         databaseHelper = DatabaseHelper(requireContext())
         sessionManager = SessionManager(requireContext())
@@ -63,10 +68,17 @@ class BudgetFragment : Fragment() {
                     startActivity(intent)
                     requireActivity().finish()
                 }
+
                 .setNegativeButton("No", null)
                 .show()
         }
+        binding.ViewPieChart.setOnClickListener {
+            val intent = Intent(requireContext(), ActivityPiechartBinding::class.java)
+            startActivity(intent)
+        }
     }
+
+
 
 
     private fun setupUI() {
@@ -270,4 +282,6 @@ class BudgetFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+
 }

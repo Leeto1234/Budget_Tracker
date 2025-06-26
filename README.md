@@ -1,4 +1,4 @@
-# 💰 BudgetSmart - Personal Finance Management App
+# 💰 Budget Tracker - Personal Finance Management App
 
 ## 📱 Documentation Part1
 [OPSC6311-POE 1_ST10392005(research).docx](https://github.com/user-attachments/files/20906223/OPSC6311-POE.1_ST10392005.research.docx)
@@ -7,11 +7,11 @@
 
 ## 📱 Overview
 
-BudgetSmart is a modern, feature-rich personal finance management application for Android that helps users track their income, expenses,
+Budget Tracker is a modern, feature-rich personal finance management application for Android that helps users track their income, expenses,
 and achieve their financial goals. With a vibrant, gamified interface and comprehensive budgeting tools,  
-BudgetSmart makes financial management engaging and intuitive.
+Budget Tracker makes financial management engaging and intuitive.
 
-🎥 **Watch the Demo**: [BudgetSmart App Walkthrough on YouTube](https://youtu.be/P_bNtbB1Whk)
+🎥 **Watch the Demo**: [Budget Tracker App Walkthrough on YouTube](https://youtu.be/P_bNtbB1Whk)
 
 ## 📸 Screenshots
 
@@ -186,7 +186,7 @@ CREATE TABLE budgets (
 1. **Clone the Repository**
    \`\`\`bash
    git clone https://github.com/ST10392005/OPSC6311_PART3-Budget-Master.git
-   cd budgetsmart
+   cd Budget Tracker
    \`\`\`
 
 2. **Open in Android Studio**
@@ -273,7 +273,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 \`\`\`
 MIT License
 
-Copyright (c) 2024 BudgetSmart
+Copyright (c) 2024 Budget Tracker
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

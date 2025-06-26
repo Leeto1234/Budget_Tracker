@@ -60,7 +60,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:backgroundTint="#B22222"
+        android:backgroundTint="#12033A"
         android:text="Select Date"
         android:textColor="@android:color/white" />
 
@@ -86,7 +86,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_weight="1"
-            android:backgroundTint="#B22222"
+            android:backgroundTint="#12033A"
             android:text="Save"
             android:textColor="@android:color/white" />
     </LinearLayout>

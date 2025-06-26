@@ -31,7 +31,7 @@
                     android:text="💡 Financial Insights"
                     android:textSize="24sp"
                     android:textStyle="bold"
-                    android:textColor="#B22222" />
+                    android:textColor="#12033A" />
 
             </LinearLayout>
 

@@ -24,7 +24,7 @@ class CategoriesFragment : Fragment() {
     private lateinit var sessionManager: SessionManager
     private lateinit var categoryAdapter: CategoryAdapter
 
-    private var selectedColor = "#B22222" // Default color
+    private var selectedColor = "#12033A" // Default color
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -91,7 +91,7 @@ class CategoriesFragment : Fragment() {
 
         // Setup color selection
         val colorViews = listOf(
-            dialogBinding.colorRed to "#B22222",
+            dialogBinding.colorRed to "#12033A",
             dialogBinding.colorBlue to "#2196F3",
             dialogBinding.colorGreen to "#4CAF50",
             dialogBinding.colorOrange to "#FF9800",

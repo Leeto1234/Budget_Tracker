@@ -36,6 +36,7 @@ android {
     buildFeatures {
         viewBinding=true
     }
+    buildToolsVersion = "35.0.1"
 }
 
 dependencies {
@@ -54,6 +55,8 @@ dependencies {
 
     // Charts - Using a different, more reliable chart library
     implementation("com.github.AnyChart:AnyChart-Android:1.1.5")
+    implementation("androidx.activity:activity:1.10.1")
+    implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
     // Testing
     testImplementation("junit:junit:4.13.2")
