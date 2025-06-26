@@ -3,9 +3,7 @@ package com.example.open_sourcepart2
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.open_sourcepart2.databinding.ActivityMainBinding
-
 // MainActivity.kt
-
 import android.content.Intent
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
