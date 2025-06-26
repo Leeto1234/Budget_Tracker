@@ -1,113 +1,176 @@
 package com.example.open_sourcepart2
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
-
-
-import android.widget.TextView
+// ui/budget/BudgetFragment.kt
+import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.open_sourcepart2.databinding.DialogAddCategoryBinding
-import com.example.open_sourcepart2.databinding.FragmentCategoriesBinding
+import com.example.open_sourcepart2.databinding.FragmentBudgetBinding
+import java.text.NumberFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
-class CategoriesFragment : Fragment() {
+class BudgetFragment : Fragment() {
 
-    private var _binding: FragmentCategoriesBinding? = null
+    private var _binding: FragmentBudgetBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var databaseHelper: DatabaseHelper
     private lateinit var sessionManager: SessionManager
-    private lateinit var categoryAdapter: CategoryAdapter
+    private lateinit var categoryBudgetAdapter: CategoryBudgetAdapter
 
-    private var selectedColor = "#12033A" // Default color
+    private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    private val monthYearFormat = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
+    private val currencyFormat = NumberFormat.getCurrencyInstance().apply {
+        currency = Currency.getInstance("ZAR")
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentCategoriesBinding.inflate(inflater, container, false)
+        _binding = FragmentBudgetBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+
         databaseHelper = DatabaseHelper(requireContext())
         sessionManager = SessionManager(requireContext())
 
         setupUI()
-        loadCategories()
+        loadData()
+        binding.btnLogout.setOnClickListener {
+            AlertDialog.Builder(requireContext())
+                .setTitle("Logout")
+                .setMessage("Are you sure you want to logout?")
+                .setPositiveButton("Yes") { _, _ ->
+                    // Clear session
+                    sessionManager.logout()
+
+                    // Navigate to login activity
+                    val intent = Intent(requireActivity(), LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    requireActivity().finish()
+                }
+
+                .setNegativeButton("No", null)
+                .show()
+        }
+
     }
+
+
+
 
     private fun setupUI() {
-        binding.rvCategories.layoutManager = LinearLayoutManager(requireContext())
-        categoryAdapter = CategoryAdapter(
-            emptyList(),
-            onEditClick = { category -> showAddEditCategoryDialog(category) },
-            onDeleteClick = { category -> deleteCategory(category) }
-        )
-        binding.rvCategories.adapter = categoryAdapter
+        binding.rvCategoryBudgets.layoutManager = LinearLayoutManager(requireContext())
+        categoryBudgetAdapter = CategoryBudgetAdapter(emptyList())
+        binding.rvCategoryBudgets.adapter = categoryBudgetAdapter
 
-        binding.fabAddCategory.setOnClickListener {
-            showAddEditCategoryDialog(null)
+        binding.btnSetBudget.setOnClickListener {
+            showSetBudgetDialog()
         }
+
+        // Set current month
+        binding.tvBudgetPeriod.text = monthYearFormat.format(Date())
     }
 
-    private fun loadCategories() {
+    private fun loadData() {
         val user = sessionManager.getUserDetails() ?: return
-        val categories = databaseHelper.getAllCategories(user.id)
 
-        if (categories.isEmpty()) {
+        // Get monthly budget
+        val calendar = Calendar.getInstance()
+        val currentMonth = "monthly" // We're using a simple approach here
+        val budget = databaseHelper.getBudgetByPeriod(user.id, currentMonth)
+
+        // Get category summaries
+        val categoryExpenseSummaries = databaseHelper.getTotalExpensesByCategory(user.id)
+
+        val categorySummaries = categoryExpenseSummaries.map {
+            CategorySummary(
+                id = it.categoryId,
+                name = it.categoryName,
+                totalSpent = it.totalSpent,
+                budget = it.budget
+            )
+        }
+
+
+
+        if (categorySummaries.isEmpty()) {
             binding.tvNoCategories.visibility = View.VISIBLE
-            binding.rvCategories.visibility = View.GONE
+            binding.rvCategoryBudgets.visibility = View.GONE
         } else {
             binding.tvNoCategories.visibility = View.GONE
-            binding.rvCategories.visibility = View.VISIBLE
-            categoryAdapter.updateCategories(categories)
+            binding.rvCategoryBudgets.visibility = View.VISIBLE
+            categoryBudgetAdapter.updateCategories(categorySummaries)
+        }
+
+        // Calculate total spent
+        val totalSpent = categorySummaries.sumOf { it.totalSpent }
+
+        // Update UI
+        if (budget != null) {
+            binding.tvMonthlyBudgetAmount.text = currencyFormat.format(budget.amount)
+
+            val remaining = budget.amount - totalSpent
+            val percentSpent = if (budget.amount > 0) (totalSpent / budget.amount * 100).toInt() else 0
+
+            binding.progressBudget.progress = percentSpent.coerceAtMost(100)
+            binding.tvSpentAmount.text = "Spent: ${currencyFormat.format(totalSpent)}"
+            binding.tvRemainingAmount.text = "Remaining: ${currencyFormat.format(remaining)}"
+        } else {
+            binding.tvMonthlyBudgetAmount.text = currencyFormat.format(0)
+            binding.progressBudget.progress = 0
+            binding.tvSpentAmount.text = "Spent: ${currencyFormat.format(totalSpent)}"
+            binding.tvRemainingAmount.text = "Remaining: ${currencyFormat.format(0)}"
         }
     }
 
-    private fun showAddEditCategoryDialog(category: Category?) {
-        val dialogBinding = DialogAddCategoryBinding.inflate(layoutInflater)
+    private fun showSetBudgetDialog() {
+        val dialogBinding = DialogSetBudgetBinding.inflate(layoutInflater)
         val dialog = AlertDialog.Builder(requireContext())
             .setView(dialogBinding.root)
             .create()
 
-        // Set dialog title based on whether we're adding or editing
-        dialogBinding.tvDialogTitle.text = if (category == null) "Add New Category" else "Edit Category"
-
-        // Pre-fill fields if editing
-        if (category != null) {
-            dialogBinding.etCategoryName.setText(category.name)
-            dialogBinding.etBudget.setText(category.budget.toString())
-            selectedColor = category.color
-        }
-
-        // Setup color selection
-        val colorViews = listOf(
-            dialogBinding.colorRed to "#12033A",
-            dialogBinding.colorBlue to "#2196F3",
-            dialogBinding.colorGreen to "#4CAF50",
-            dialogBinding.colorOrange to "#FF9800",
-            dialogBinding.colorPurple to "#9C27B0",
-            dialogBinding.colorPink to "#E91E63"
+        // Setup period spinner
+        val periods = arrayOf("Monthly", "Weekly", "Yearly")
+        val periodAdapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_item,
+            periods
         )
+        periodAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        dialogBinding.spinnerPeriod.adapter = periodAdapter
 
-        // Mark the selected color
-        updateSelectedColor(colorViews, selectedColor)
+        // Pre-fill with existing budget if any
+        val user = sessionManager.getUserDetails() ?: return
+        val currentMonth = "monthly"
+        val budget = databaseHelper.getBudgetByPeriod(user.id, currentMonth)
 
-        // Set click listeners for color selection
-        colorViews.forEach { (view, color) ->
-            view.setOnClickListener {
-                selectedColor = color
-                updateSelectedColor(colorViews, selectedColor)
+        if (budget != null) {
+            dialogBinding.etBudgetAmount.setText(budget.amount.toString())
+            val periodIndex = when (budget.period) {
+                "monthly" -> 0
+                "weekly" -> 1
+                "yearly" -> 2
+                else -> 0
             }
+            dialogBinding.spinnerPeriod.setSelection(periodIndex)
         }
 
         dialogBinding.btnCancel.setOnClickListener {
@@ -115,52 +178,91 @@ class CategoriesFragment : Fragment() {
         }
 
         dialogBinding.btnSave.setOnClickListener {
-            val name = dialogBinding.etCategoryName.text.toString().trim()
-            val budgetStr = dialogBinding.etBudget.text.toString().trim()
+            val amountStr = dialogBinding.etBudgetAmount.text.toString().trim()
 
-            if (name.isEmpty() || budgetStr.isEmpty()) {
-                Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_SHORT).show()
+            if (amountStr.isEmpty()) {
+                Toast.makeText(requireContext(), "Please enter a budget amount", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             try {
-                val budget = budgetStr.toDouble()
-                val user = sessionManager.getUserDetails() ?: return@setOnClickListener
+                val amount = amountStr.toDouble()
+                val periodPosition = dialogBinding.spinnerPeriod.selectedItemPosition
+                val periodStr = when (periodPosition) {
+                    0 -> "monthly"
+                    1 -> "weekly"
+                    2 -> "yearly"
+                    else -> "monthly"
+                }
 
-                if (category == null) {
-                    // Add new category
-                    val newCategory = Category(
-                        name = name,
-                        color = selectedColor,
-                        budget = budget,
+                // Calculate start and end dates
+                val calendar = Calendar.getInstance()
+                val startDate: String
+                val endDate: String
+
+                when (periodStr) {
+                    "weekly" -> {
+                        calendar.set(Calendar.DAY_OF_WEEK, calendar.firstDayOfWeek)
+                        startDate = dateFormat.format(calendar.time)
+                        calendar.add(Calendar.DAY_OF_WEEK, 6)
+                        endDate = dateFormat.format(calendar.time)
+                    }
+                    "monthly" -> {
+                        calendar.set(Calendar.DAY_OF_MONTH, 1)
+                        startDate = dateFormat.format(calendar.time)
+                        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
+                        endDate = dateFormat.format(calendar.time)
+                    }
+                    "yearly" -> {
+                        calendar.set(Calendar.DAY_OF_YEAR, 1)
+                        startDate = dateFormat.format(calendar.time)
+                        calendar.set(Calendar.DAY_OF_YEAR, calendar.getActualMaximum(Calendar.DAY_OF_YEAR))
+                        endDate = dateFormat.format(calendar.time)
+                    }
+                    else -> {
+                        calendar.set(Calendar.DAY_OF_MONTH, 1)
+                        startDate = dateFormat.format(calendar.time)
+                        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
+                        endDate = dateFormat.format(calendar.time)
+                    }
+                }
+
+                if (budget != null) {
+                    // Update existing budget
+                    val updatedBudget = Budget(
+                        id = budget.id,
+                        amount = amount,
+                        period = periodStr,
+                        startDate = startDate,
+                        endDate = endDate,
                         userId = user.id
                     )
 
-                    val id = databaseHelper.addCategory(newCategory)
-                    if (id > 0) {
-                        Toast.makeText(requireContext(), "Category added successfully", Toast.LENGTH_SHORT).show()
-                        loadCategories()
+                    val result = databaseHelper.updateBudget(updatedBudget)
+                    if (result > 0) {
+                        Toast.makeText(requireContext(), "Budget updated successfully", Toast.LENGTH_SHORT).show()
+                        loadData()
                         dialog.dismiss()
                     } else {
-                        Toast.makeText(requireContext(), "Failed to add category", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Failed to update budget", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    // Update existing category
-                    val updatedCategory = Category(
-                        id = category.id,
-                        name = name,
-                        color = selectedColor,
-                        budget = budget,
+                    // Add new budget
+                    val newBudget = Budget(
+                        amount = amount,
+                        period = periodStr,
+                        startDate = startDate,
+                        endDate = endDate,
                         userId = user.id
                     )
 
-                    val result = databaseHelper.updateCategory(updatedCategory)
-                    if (result > 0) {
-                        Toast.makeText(requireContext(), "Category updated successfully", Toast.LENGTH_SHORT).show()
-                        loadCategories()
+                    val id = databaseHelper.addBudget(newBudget)
+                    if (id > 0) {
+                        Toast.makeText(requireContext(), "Budget set successfully", Toast.LENGTH_SHORT).show()
+                        loadData()
                         dialog.dismiss()
                     } else {
-                        Toast.makeText(requireContext(), "Failed to update category", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Failed to set budget", Toast.LENGTH_SHORT).show()
                     }
                 }
             } catch (e: Exception) {
@@ -171,31 +273,10 @@ class CategoriesFragment : Fragment() {
         dialog.show()
     }
 
-    private fun updateSelectedColor(colorViews: List<Pair<TextView, String>>, selectedColor: String) {
-        colorViews.forEach { (view, color) ->
-            view.text = if (color == selectedColor) "✓" else ""
-        }
-    }
-
-    private fun deleteCategory(category: Category) {
-        AlertDialog.Builder(requireContext())
-            .setTitle("Delete Category")
-            .setMessage("Are you sure you want to delete this category? All expenses in this category will be affected.")
-            .setPositiveButton("Delete") { _, _ ->
-                val result = databaseHelper.deleteCategory(category.id)
-                if (result > 0) {
-                    Toast.makeText(requireContext(), "Category deleted successfully", Toast.LENGTH_SHORT).show()
-                    loadCategories()
-                } else {
-                    Toast.makeText(requireContext(), "Failed to delete category", Toast.LENGTH_SHORT).show()
-                }
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+
+
 }
