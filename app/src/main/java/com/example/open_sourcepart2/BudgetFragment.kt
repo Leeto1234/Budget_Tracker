@@ -13,7 +13,6 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.open_sourcepart2.databinding.ActivityPiechartBinding
 import com.example.open_sourcepart2.databinding.FragmentBudgetBinding
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -72,10 +71,7 @@ class BudgetFragment : Fragment() {
                 .setNegativeButton("No", null)
                 .show()
         }
-        binding.ViewPieChart.setOnClickListener {
-            val intent = Intent(requireContext(), ActivityPiechartBinding::class.java)
-            startActivity(intent)
-        }
+
     }
 
 
