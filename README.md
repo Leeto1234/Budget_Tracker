@@ -7,12 +7,13 @@ and achieve their financial goals. With a vibrant, gamified interface and compre
 Budget Tracker makes financial management engaging and intuitive.
 
 Video  https://youtu.be/N732fLesAtY?si=ZyrW3K3CQrVxetV4
+Github Link https://github.com/Leeto1234/Budget_Tracker.git
 
 ST10375811-Leeto
 ST10291938-Lesedi
 
 
-## ✨ Features
+Features
 
 Dashboard & Overview
 - **Real-time Balance Tracking**: View your total balance, income, and expenses at a glance
@@ -100,7 +101,7 @@ Core Technologies
 - **Debug**: Development build with debugging enabled
 - **Release**: Production build with optimizations
 
-## 🎯 Usage Guide
+ Usage Guide
 
 ### **Getting Started**
 1. **Registration**: Create a new account with email and password
