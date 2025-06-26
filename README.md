@@ -6,8 +6,10 @@ Budget Tracker is a modern, feature-rich personal finance management application
 and achieve their financial goals. With a vibrant, gamified interface and comprehensive budgeting tools,  
 Budget Tracker makes financial management engaging and intuitive.
 
+The working APK is the App-debug
 Video  https://youtu.be/N732fLesAtY?si=ZyrW3K3CQrVxetV4
 Github Link https://github.com/Leeto1234/Budget_Tracker.git
+word                                                                       https://advtechonline-my.sharepoint.com/:w:/g/personal/st10291938_rcconnect_edu_za/Edw-ZVf2uDdEnXtq23Ba80gBigvKdY_D8T2JMMRCmiJydw?e=IpDWvs
 
 
 ST10375811-Leeto
