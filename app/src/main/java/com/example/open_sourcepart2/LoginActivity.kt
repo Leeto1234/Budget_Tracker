@@ -41,10 +41,7 @@ class LoginActivity : AppCompatActivity() {
                     // Launch MainActivity
                     startActivity(Intent(this, MainActivity::class.java))
 
-                    // Also with userId
-                    val pieIntent = Intent(this, Piechart::class.java)
-                    pieIntent.putExtra("userId", user.id)
-                    startActivity(pieIntent)
+
 
                     finish()
                 } else {
